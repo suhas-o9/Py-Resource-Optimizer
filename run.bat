@@ -1,2 +1,2 @@
 cmd /c "conda activate Resource"
-cmd /c "streamlit run main.py"
+cmd /c "streamlit run ./src/main.py"

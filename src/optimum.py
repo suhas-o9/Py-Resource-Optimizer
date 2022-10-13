@@ -8,93 +8,13 @@ from shared import *
 from datetime import datetime as dt
 import warnings
 warnings.filterwarnings("ignore")
-
-#TODO Vectorize this function to accept a df and get max_slices for each row in that df
-def get_optimum_settings(factors, nodes, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, ideal_mode, presliced_flag):
-   
-   
-   logger.debug(f"Running Optimization for {[nodes, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, ideal_mode, presliced_flag]}")
-   start = dt.now()
-   
-   
-   available_memory_per_node = math.floor(VMem * cluster_perc)
-   available_memory = math.floor(nodes * available_memory_per_node)
-   available_cores_per_node = math.floor(VCores * cluster_perc)
-   available_cores = math.floor(nodes * available_cores_per_node)
-   normalized_data_load=Input_Rows * (Input_Cols/20)
-   calc_mem = normalized_data_load * DataLoadMultiplier
-   final_mem= override_mem if override_mem_flag else calc_mem
-   
-   
-   CoresPerNode=VCores
-   TotalCoresAvailable=int(available_cores)
-   MemRequired=final_mem
-   NormalizedDataLoad=normalized_data_load
-   TotalMemAvailable=available_memory
-   Slices=slices
-   checkpoint1=dt.now()
-   runtime1 = (checkpoint1-start).total_seconds()
-   logger.debug(f"Optimization : Initial setup took {runtime1} s")
-
-   
-   
-
- 
-   
-   df=factors[factors["TotalCoresUsed"] <= TotalCoresAvailable]
-   #CONSTRAINT 1
-   df=df[df.Cores < available_cores_per_node]
-
-   df["TotalMemUsed"]=df.TotalCoresUsed * (MemRequired + NormalizedDataLoad) + df.Exec
-   
-   df["MaxExecPerNode"] = (df.Exec/nodes).apply(lambda x : math.ceil(x))
-   
-   df["MaxSerialSlices"]=(Slices/df.TotalCoresUsed).apply(lambda x: math.ceil(x))
-   df["WorkerMemory"] = round(df.Cores * MemRequired, 0)
-   df["MemoryOverhead"] = df.WorkerMemory + 1
-   df["ExecutorMemory"] = 2 if presliced_flag else round(df.Cores * NormalizedDataLoad, 0) 
-   
-   df["TotalCoresUsed%"] = df["TotalCoresUsed"] / TotalCoresAvailable
-   df["TotalMemUsed"] = (df["MemoryOverhead"] + df["ExecutorMemory"]) * df.Exec
-   
-   #CONSTRAINT 2 and 3
-   df=df[df.TotalMemUsed < TotalMemAvailable] 
-   df=df[df.ExecutorMemory + df.MemoryOverhead < available_memory_per_node]
-
-   df["TotalMemUsedPerNode"]=df.TotalMemUsed / df.Exec
-
-   #CONSTRAINT 4
-   df=df[df["MaxExecPerNode"] * df["TotalMemUsedPerNode"] < available_memory_per_node]
-
-
-   df["TotalMemUsed%"] = df["TotalMemUsed"] / TotalMemAvailable
- 
-   
-   checkpoint2=dt.now()
-   runtime2 = (checkpoint2-checkpoint1).total_seconds()
-   logger.debug(f"Optimization : Applying Constaints took {runtime2} s")
-
-   df=df.astype({"Exec":"int64","Cores":"int64","TotalCoresUsed":"int64"})
-   df=df.sort_values(["MaxSerialSlices", "Exec", "TotalMemUsed" ], ascending=[True, True, True])\
-         .reset_index(drop=True)
-   
-   end = dt.now()
-   runtime = (end-start).total_seconds()
-   runtime3 = (end-checkpoint2).total_seconds()
-   logger.debug(f"Optimization : Sorting took {runtime3} s")
-   logger.info(f"Optimization for {[nodes, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, ideal_mode, presliced_flag]} took {runtime} s")
-   if ideal_mode:
-      try:
-         return df.MaxSerialSlices.iloc[0]
-      except:
-         return None   
-   else:
-      return df
+from os.path import dirname
 
 def optimize(cluster_perc, MemRequired, NormalizedDataLoad, slices, presliced_flag, VMem, VCores, Nodes , CurrentInfraCalc):
     
     start = dt.now()
-    df=pd.read_parquet("./data/factors.parquet")
+    path = os.path.join(dirname(dirname(__file__)), "data", "factors.parquet") 
+    df=pd.read_parquet(path)
     df = df.astype({"Cores_x":"int64",	"Memory":"int64",	"node_count":"int64",	"Exec":"int64",	"Cores_y":"int64"})
     if CurrentInfraCalc:
         df = df[df.Cores_x==VCores][df.Memory==VMem][df.node_count==Nodes]

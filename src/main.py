@@ -11,13 +11,13 @@ from display import *
 import json
 from shared import logger
 from datetime import datetime as dt
-
+from os.path import dirname
 
 def main():
    
    set_frame()
-   
-   text = read_json("./config/text.json")
+   path = os.path.join(dirname(dirname(__file__)), "config", "text.json")
+   text = read_json(path)
     
    
    

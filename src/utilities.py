@@ -5,9 +5,9 @@ import math
 import pandas as pd
 from streamlit_echarts import st_echarts
 import json
-
+from os.path import dirname
 import shared
-
+import os
 
 
 
@@ -28,7 +28,8 @@ def get_inputs(credits):
    logger = shared.logger
    
    nodes=float(st.slider("Enter the number of Nodes", 1, 200, 3))
-   VM_List = pd.read_csv("./data/VM_list.csv")
+   path = os.path.join(dirname(dirname(__file__)), "data", "VM_list.csv") 
+   VM_List = pd.read_csv(path)
    VM_List["DisplayName"]=VM_List["name"].astype(str) + " - " + VM_List["Memory"].astype(str) + "G - " + VM_List["Cores"].astype(str) + "Cores"
    def format_func1(key):
       name = f'''{VM_List[VM_List["key"]==key]["name"].iloc[0]} - {VM_List[VM_List["key"]==key]["Memory"].iloc[0]}G - {VM_List[VM_List["key"]==key]["Cores"].iloc[0]} Cores'''

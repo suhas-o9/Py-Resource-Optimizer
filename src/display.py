@@ -6,7 +6,7 @@ import pandas as pd
 from streamlit_echarts import st_echarts
 from utilities import *
 from optimum import *
-
+from os.path import dirname
 
 def display_results_current_infra(df):
    
@@ -96,8 +96,8 @@ def display_results_current_infra(df):
 
 
 def display_runtime_vs_node_line_chart(chart_data, VName):
-                
-   options = read_json("./config/runtime_vs_node_line_chart_options.json")
+   path = os.path.join(dirname(dirname(__file__)), "config", "runtime_vs_node_line_chart_options.json")             
+   options = read_json(path)
    options["series"][0]["data"] =   chart_data[["node_count","MaxSerialSlices"]].values.tolist()
    with st.expander(options["title"]["expander_text"].format(VName=VName)):
       st_echarts(options=options, height="610px") 
@@ -105,7 +105,8 @@ def display_runtime_vs_node_line_chart(chart_data, VName):
 
 def display_runtime_vs_cost_line_chart(chart_data):
    full_df_optimum = chart_data.copy()
-   options = read_json("./config/Runtime_vs_Cost_line_chart_options.json")
+   path = os.path.join(dirname(dirname(__file__)), "config", "Runtime_vs_Cost_line_chart_options.json") 
+   options = read_json(path)
    options["series"][0]["data"] =   full_df_optimum[["total_cost","MaxSerialSlices"]].values.tolist()
    options["series"][1]["data"] =   full_df_optimum[["total_cost","tooltip"]].values.tolist()
    with st.expander("Show Me All Machines, Life's Too Short for Commitments 🏔️"):
