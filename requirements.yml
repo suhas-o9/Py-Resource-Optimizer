@@ -1,0 +1,10 @@
+name: Resource
+
+dependencies:
+  - python=3.9.12
+  - numpy=1.21.5
+  - pandas=1.4.2
+  - pip
+  - pip:
+    - streamlit
+    - streamlit_echarts
