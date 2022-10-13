@@ -1,0 +1,1 @@
+cmd /c "streamlit run main.py"

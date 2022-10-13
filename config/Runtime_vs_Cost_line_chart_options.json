@@ -1,0 +1,81 @@
+{
+   "color": ["#c23531","#2f4554", "#61a0a8", "#d48265", "#91c7ae","#749f83",  "#ca8622", "#bda29a","#6e7074", "#546570", "#c4ccd3"],
+   
+   "title": {
+             "text_unused": "Nodes vs Max Serial Slices",
+             "subtext_unused": "Sub Title",
+             "left": "center",
+             "top": "top",
+             "textStyle": {
+                "fontSize": 30,
+                "color": "rgba(171, 171, 171, 1)"
+
+             },
+             "subtextStyle": {
+                "fontSize": 20
+             }
+          },
+    
+   "legend": {"show": "True", 
+               "left": "75%",
+               "textStyle": {
+                  "color": "rgba(171, 171, 171, 1)"
+               }
+            },
+   "xAxis": {  
+                "type": "log",
+                "name": "Total Cost per month ($ x Some Multiplier)",
+                "nameLocation": "middle",
+                "nameGap": 30,
+                "data" : "",
+                "axisPointer": {
+                  "show": "False",
+                  "type": "line"
+                }
+                
+             },
+   "yAxis": {"type": "log"
+             
+           },
+   
+   "series": [
+                {  "name" : "Runtime",
+                   "symbol": "emptycircle",
+                   "data" : "",
+                   "type": "line"
+                   
+                   
+                    
+                },
+                {  "name" : "VM",
+                   "symbol": "emptycircle",
+                   "data" : "",
+                   "type": "line",
+                   "show":"True" 
+                   
+                   
+                    
+                }
+             ],
+   "toolbox": {
+   "left": "right",
+   "itemSize": 25,
+   "top": 55,
+   "feature": {
+      "dataZoom": {
+         "yAxisIndex": "none"
+      },
+      "restore": {}
+   }
+   },
+   "tooltip": {
+                  "trigger": "item",
+                  "triggerOn": "mousemove",
+                  "alwaysShowContent": "True",
+                  "axisPointer": {
+                                    "type": "shadow", 
+                                    "show": "True"
+                                    }
+      
+               }      
+ }

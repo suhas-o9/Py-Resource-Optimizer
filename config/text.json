@@ -1,0 +1,15 @@
+{
+   "title": {
+             "text": "o9 Python Plugin Resource Optimizer"
+              },
+   
+   "credits": {
+               "text": "Author: suhas.umesh@o9solutions.com"
+               },
+   "tabs": {
+               "tab1" : {"title": "Current Infra"}, 
+               "tab2" : {"title": "Ideal Infra"}
+   }
+
+
+ }
