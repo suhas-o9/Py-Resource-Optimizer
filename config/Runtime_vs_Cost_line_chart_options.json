@@ -23,7 +23,7 @@
                }
             },
    "xAxis": {  
-                "type": "log",
+                "type": "value",
                 "name": "Total Cost per month ($ x Some Multiplier)",
                 "nameLocation": "middle",
                 "nameGap": 30,

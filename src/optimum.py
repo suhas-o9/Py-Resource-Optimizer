@@ -10,6 +10,35 @@ import warnings
 warnings.filterwarnings("ignore")
 from os.path import dirname
 
+
+def gen_max_slices_curve_data(df, VMem, VCores):
+   logger.info("Generating Max Slices curve for given machine")
+   df = df[df.Cores_x==VCores][df.Memory==VMem]
+   df = df.loc[df.groupby(["MaxSerialSlices"])["node_count"].idxmin()]
+   df = df.loc[df.groupby(["node_count"])["MaxSerialSlices"].idxmin()]
+   return df
+
+def get_runtime_vs_cost_line_chart_data(full_df):
+   logger.info("Generating Runtime vs Cost data")
+   start = dt.now()
+   
+   #TODO Get correct Prices
+   full_df["total_cost"] = full_df.node_count * full_df.Memory
+
+   full_df.dropna(inplace=True)
+   full_df_optimum = full_df.loc[full_df.groupby(["MaxSerialSlices"])["total_cost"].idxmin()]
+   full_df_optimum = full_df_optimum.loc[full_df_optimum.groupby(["total_cost"])["MaxSerialSlices"].idxmin()]
+
+   #TODO Change this to get VM name correectly
+   full_df_optimum["name"] = "E" + full_df_optimum.Cores_x.astype("str")
+
+   full_df_optimum["tooltip"] = full_df_optimum["node_count"].astype("str") + " * " +  full_df_optimum["name"] + " --> " +full_df_optimum["MaxSerialSlices"].astype("str") +"x Runtime" 
+   end = dt.now()
+   runtime = (end-start).total_seconds()
+   logger.info(f"Generating Runtime vs Cost data took {runtime} s")
+   return full_df_optimum
+
+
 def optimize(cluster_perc, MemRequired, NormalizedDataLoad, slices, presliced_flag, VMem, VCores, Nodes , CurrentInfraCalc):
     
     start = dt.now()
@@ -53,32 +82,16 @@ def optimize(cluster_perc, MemRequired, NormalizedDataLoad, slices, presliced_fl
     end = dt.now()
     runtime = (end-start).total_seconds()
     print(f"{runtime} seconds")
-    return df
+
+    if (not CurrentInfraCalc):
+        chart_data1 = gen_max_slices_curve_data(df, VMem, VCores)
+        chart_data2 = get_runtime_vs_cost_line_chart_data(df)
+        return chart_data1, chart_data2
+    
+    else: 
+        df = df.sort_values(["MaxSerialSlices", "Exec", "TotalMemUsed" ], \
+                              ascending=[True, True, True])\
+                                    .reset_index(drop=True)
+        return df
 
 
-def gen_max_slices_curve_data(df_nodes):
-   logger.info("Generating Max Slices curve for given machine")
-   # df_nodes = pd.DataFrame(range(1,200), columns=["node_count"])
-   # df_nodes["max_slices"] = df_nodes.node_count.apply(lambda x : get_optimum_settings(factors, x, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, ideal_mode=ideal_mode, presliced_flag=presliced_flag))
-   df_nodes = df_nodes.loc[df_nodes.groupby(["MaxSerialSlices"])["node_count"].idxmin()]
-   return df_nodes
-
-def get_runtime_vs_cost_line_chart_data(full_df):
-   logger.info("Generating Runtime vs Cost data")
-   start = dt.now()
-   
-   full_df["total_cost"] = full_df.node_count * full_df.Memory
-   full_df.dropna(inplace=True)
-   full_df_optimum = full_df.loc[full_df.groupby(["MaxSerialSlices"])["total_cost"].idxmin()]
-   full_df_optimum = full_df_optimum.loc[full_df_optimum.groupby(["total_cost"])["MaxSerialSlices"].idxmin()]
-
-   #TODO Change this to get VM name correectly
-   full_df_optimum["name"] = "E" + full_df_optimum.Cores_x.astype("str")
-
-   full_df_optimum["tooltip"] = full_df_optimum["node_count"].astype("str") + " * " +  full_df_optimum["name"] + " --> " +full_df_optimum["MaxSerialSlices"].astype("str") +"x Runtime" 
-   # full_df_optimum["parallelism"]=1/full_df_optimum["max_slices"]
-   # full_df_optimum=full_df_optimum.sort_values(["parallelism"], ascending=True)
-   end = dt.now()
-   runtime = (end-start).total_seconds()
-   logger.info(f"Generating Runtime vs Cost data took {runtime} s")
-   return full_df_optimum
