@@ -66,7 +66,7 @@ def main():
                df1 = optimize(cluster_perc, MemRequired, NormalizedDataLoad, slices, presliced_flag, VMem, VCores, Nodes, CurrentInfraCalc)
 
             with st.spinner("Optimizing for your VM"):
-               chart_data1=gen_max_slices_curve_data(df1)
+               chart_data1=gen_max_slices_curve_data(df1, VCores, VMem)
                display_runtime_vs_node_line_chart(chart_data1, VName)
                
             with st.spinner("Optimizing Across All VMs"):
