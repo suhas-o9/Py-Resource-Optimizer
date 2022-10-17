@@ -56,12 +56,13 @@ def optimize(cluster_perc, MemRequired, NormalizedDataLoad, slices, presliced_fl
     return df
 
 
-def gen_max_slices_curve_data(df_nodes):
-   logger.info("Generating Max Slices curve for given machine")
-   # df_nodes = pd.DataFrame(range(1,200), columns=["node_count"])
-   # df_nodes["max_slices"] = df_nodes.node_count.apply(lambda x : get_optimum_settings(factors, x, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, ideal_mode=ideal_mode, presliced_flag=presliced_flag))
-   df_nodes = df_nodes.loc[df_nodes.groupby(["MaxSerialSlices"])["node_count"].idxmin()]
-   return df_nodes
+def gen_max_slices_curve_data(df, VCores, VMem):
+    logger.info("Generating Max Slices curve for given machine")
+    # df_nodes = pd.DataFrame(range(1,200), columns=["node_count"])
+    # df_nodes["max_slices"] = df_nodes.node_count.apply(lambda x : get_optimum_settings(factors, x, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, ideal_mode=ideal_mode, presliced_flag=presliced_flag))
+    df = df[df.Cores_x==VCores][df.Memory==VMem]
+    df = df.loc[df.groupby(["MaxSerialSlices"])["node_count"].idxmin()]
+    return df
 
 def get_runtime_vs_cost_line_chart_data(full_df):
    logger.info("Generating Runtime vs Cost data")
