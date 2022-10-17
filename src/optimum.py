@@ -10,10 +10,10 @@ import warnings
 warnings.filterwarnings("ignore")
 from os.path import dirname
 
-def optimize(cluster_perc, MemRequired, NormalizedDataLoad, slices, presliced_flag, VMem, VCores, Nodes , CurrentInfraCalc):
+def optimize(cluster_perc, MemRequired, NormalizedDataLoad, slices, presliced_flag, VMem, VCores, Nodes , CurrentInfraCalc, Cloud):
     
     start = dt.now()
-    path = os.path.join(dirname(dirname(__file__)), "data", "factors.parquet") 
+    path = os.path.join(dirname(dirname(__file__)), "data", f"factors_{Cloud}.parquet") 
     df=pd.read_parquet(path)
     df = df.astype({"Cores_x":"int64",	"Memory":"int64",	"node_count":"int64",	"Exec":"int64",	"Cores_y":"int64"})
     if CurrentInfraCalc:

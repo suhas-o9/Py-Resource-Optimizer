@@ -27,8 +27,10 @@ def set_frame():
 def get_inputs(credits):
    logger = shared.logger
    
+   Cloud=st.radio("Cloud Provider", ["AWS", "Azure", "GCP"], horizontal=True, index=1, help="Find out from Ops which Cloud your Tenant/Hadoop Cluster is hosted on")
+
    nodes=float(st.slider("Enter the number of Nodes", 1, 200, 3))
-   path = os.path.join(dirname(dirname(__file__)), "data", "VM_list.csv") 
+   path = os.path.join(dirname(dirname(__file__)), "data", f"VM_{Cloud}.csv")
    VM_List = pd.read_csv(path)
    VM_List["DisplayName"]=VM_List["name"].astype(str) + " - " + VM_List["Memory"].astype(str) + "G - " + VM_List["Cores"].astype(str) + "Cores"
    def format_func1(key):
@@ -76,7 +78,7 @@ def get_inputs(credits):
 
    logger.info(f"Getting Inputs: {shared.inputs}")
 
-   return nodes, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, VM_List, VPrice, presliced_flag, VName, Run, RunInfra
+   return nodes, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, VM_List, VPrice, presliced_flag, VName, Run, RunInfra, Cloud
 
 
 
