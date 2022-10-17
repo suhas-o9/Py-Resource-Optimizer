@@ -25,7 +25,7 @@ def main():
        
    st.title(text["title"]["text"])
    with st.sidebar:
-      Nodes, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, VM_List, VPrice, presliced_flag, VName, Run,  RunInfra = get_inputs(credits)
+      Nodes, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, VM_List, VPrice, presliced_flag, VName, Run,  RunInfra, Cloud = get_inputs(credits)
 
    NormalizedDataLoad = Input_Rows * (Input_Cols/20)
    calc_mem = NormalizedDataLoad * DataLoadMultiplier
@@ -40,7 +40,7 @@ def main():
              
             try:
                CurrentInfraCalc = True
-               df1 = optimize(cluster_perc, MemRequired, NormalizedDataLoad, slices, presliced_flag, VMem, VCores, Nodes, CurrentInfraCalc)\
+               df1 = optimize(cluster_perc, MemRequired, NormalizedDataLoad, slices, presliced_flag, VMem, VCores, Nodes, CurrentInfraCalc, Cloud)\
                         .sort_values(["MaxSerialSlices", "Exec", "TotalMemUsed" ], \
                               ascending=[True, True, True])\
                                     .reset_index(drop=True)
@@ -63,7 +63,7 @@ def main():
             
             with st.spinner("Crunching Some Numbers"):
                CurrentInfraCalc = False
-               df1 = optimize(cluster_perc, MemRequired, NormalizedDataLoad, slices, presliced_flag, VMem, VCores, Nodes, CurrentInfraCalc)
+               df1 = optimize(cluster_perc, MemRequired, NormalizedDataLoad, slices, presliced_flag, VMem, VCores, Nodes, CurrentInfraCalc, Cloud)
 
             with st.spinner("Optimizing for your VM"):
                chart_data1=gen_max_slices_curve_data(df1, VCores, VMem)
