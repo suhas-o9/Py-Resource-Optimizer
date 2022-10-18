@@ -1,23 +1,43 @@
-import streamlit as st
-import time
 import numpy as np
-import math
 import pandas as pd
-from streamlit_echarts import st_echarts
-from shared import *
 from datetime import datetime as dt
 import warnings
 warnings.filterwarnings("ignore")
 from os.path import dirname
+# from PyResourceOptimizer import *
+# from .shared import inputs
+import os
+from PyResourceOptimizer import shared
 
-def optimize(cluster_perc, MemRequired, NormalizedDataLoad, slices, presliced_flag, VMem, VCores, Nodes , CurrentInfraCalc, Cloud):
+
+logger=shared.logger
+
+def optimize(CalcMode):
+    """
+    CalcMode:   
+    1: Current VM, Current Node Count
+    2: Current VM, Any Node Count
+    3. Any VM, Any Node Count
+    """
     
+    Nodes, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, VPrice, presliced_flag, VName, Run,  RunInfra, Cloud = shared.inputs.values()
+    
+    NormalizedDataLoad = Input_Rows * (Input_Cols/20)
+    calc_mem = NormalizedDataLoad * DataLoadMultiplier
+    MemRequired = override_mem if override_mem_flag else calc_mem
+
     start = dt.now()
-    path = os.path.join(dirname(dirname(__file__)), "data", f"factors_{Cloud}.parquet") 
+    
+    if (CalcMode==3):
+        path = os.path.join(dirname(dirname(dirname(__file__))), "data", f"factors_{Cloud}.parquet") 
+    if (CalcMode==1 or CalcMode==2):
+        path = os.path.join(dirname(dirname(dirname(__file__))), "data", f"factors_{VName}.parquet")
+
+    
     df=pd.read_parquet(path)
     df = df.astype({"Cores_x":"int64",	"Memory":"int64",	"node_count":"int64",	"Exec":"int64",	"Cores_y":"int64"})
-    if CurrentInfraCalc:
-        df = df[df.Cores_x==VCores][df.Memory==VMem][df.node_count==Nodes]
+    if CalcMode==1:
+        df = df[df.node_count==Nodes]
     
     df["TotalCoresUsed"] = (df.Exec * df.Cores_y)
 
@@ -60,7 +80,7 @@ def gen_max_slices_curve_data(df, VCores, VMem):
     logger.info("Generating Max Slices curve for given machine")
     # df_nodes = pd.DataFrame(range(1,200), columns=["node_count"])
     # df_nodes["max_slices"] = df_nodes.node_count.apply(lambda x : get_optimum_settings(factors, x, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, ideal_mode=ideal_mode, presliced_flag=presliced_flag))
-    df = df[df.Cores_x==VCores][df.Memory==VMem]
+    # df = df[df.Cores_x==VCores][df.Memory==VMem]
     df = df.loc[df.groupby(["node_count"])["MaxSerialSlices"].idxmin()]
     df = df.loc[df.groupby(["MaxSerialSlices"])["node_count"].idxmin()]
     return df

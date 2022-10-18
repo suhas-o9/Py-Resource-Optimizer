@@ -1,12 +1,9 @@
 import streamlit as st
-import time
-import numpy as np
-import math
-import pandas as pd
 from streamlit_echarts import st_echarts
-from utilities import *
-from optimum import *
+import os
 from os.path import dirname
+from PyResourceOptimizer import shared
+from PyResourceOptimizer import utilities
 
 def display_results_current_infra(df):
    
@@ -51,13 +48,7 @@ def display_results_current_infra(df):
          st.metric("Usage of Total Available Cores", df["TotalCoresUsed"].iloc[i], help=f"{df.Exec.iloc[i]} NumExecutors x {df.Cores_y.iloc[i]} ExecutorCores", delta=Best,)
       with colE:
          st.metric("Usage % of Total Available Cores", str(round(df["TotalCoresUsed%"].iloc[i], 1)) + " %", delta=Best)
-      # with colF:
-         
-         # details=st.checkbox("Show Details", key=i, value=preselect_value)
-       
-         
-    
-   
+          
    st.success('''VERY VERY BEST🚀🚀🚀🚀''')
    i=0
    display_formatted_expander(i)
@@ -93,20 +84,18 @@ def display_results_current_infra(df):
    except Exception as e:
       st.error(f"Error due to {e}")
 
-
-
-def display_runtime_vs_node_line_chart(chart_data, VName):
-   path = os.path.join(dirname(dirname(__file__)), "config", "runtime_vs_node_line_chart_options.json")             
-   options = read_json(path)
+def display_runtime_vs_node_line_chart(chart_data):
+   path = os.path.join(dirname(dirname(dirname(__file__))), "config", "runtime_vs_node_line_chart_options.json")             
+   options = utilities.read_json(path)
    options["series"][0]["data"] =   chart_data[["node_count","MaxSerialSlices"]].values.tolist()
-   with st.expander(options["title"]["expander_text"].format(VName=VName)):
+   with st.expander(options["title"]["expander_text"].format(VName=shared.inputs["VName"])):
       st_echarts(options=options, height="610px") 
 
 
 def display_runtime_vs_cost_line_chart(chart_data):
    full_df_optimum = chart_data.copy()
-   path = os.path.join(dirname(dirname(__file__)), "config", "Runtime_vs_Cost_line_chart_options.json") 
-   options = read_json(path)
+   path = os.path.join(dirname(dirname(dirname(__file__))), "config", "Runtime_vs_Cost_line_chart_options.json") 
+   options = utilities.read_json(path)
    options["series"][0]["data"] =   full_df_optimum[["total_cost","MaxSerialSlices"]].values.tolist()
    options["series"][1]["data"] =   full_df_optimum[["total_cost","tooltip"]].values.tolist()
    with st.expander("Show Me All Machines, Life's Too Short for Commitments 🏔️"):

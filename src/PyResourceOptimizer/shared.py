@@ -4,9 +4,6 @@ import os
 import csv
 import io
 # from utilities import set_frame
-debug_mode = False
-inputs = {}
-
 
 class CsvFormatter(logging.Formatter):
     def __init__(self):
@@ -49,5 +46,9 @@ def init_logger(log_module):
    #  logger.info("Initiated Logger")
     return logger
     
+
+
+debug_mode = False
+inputs = {}
 logger = init_logger("ResourceOptimizer")
 
