@@ -24,7 +24,7 @@
                }
             },
    "xAxis": {  
-                "type": "log",
+                "type": "value",
                 "name": "Total Node Count",
                 "nameLocation": "middle",
                 "nameGap": 30,

@@ -61,6 +61,7 @@ def gen_max_slices_curve_data(df, VCores, VMem):
     # df_nodes = pd.DataFrame(range(1,200), columns=["node_count"])
     # df_nodes["max_slices"] = df_nodes.node_count.apply(lambda x : get_optimum_settings(factors, x, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, ideal_mode=ideal_mode, presliced_flag=presliced_flag))
     df = df[df.Cores_x==VCores][df.Memory==VMem]
+    df = df.loc[df.groupby(["node_count"])["MaxSerialSlices"].idxmin()]
     df = df.loc[df.groupby(["MaxSerialSlices"])["node_count"].idxmin()]
     return df
 
