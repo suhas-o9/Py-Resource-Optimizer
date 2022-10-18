@@ -1,15 +1,18 @@
 import streamlit as st
-import time
 import numpy as np
-import math
 import pandas as pd
-from streamlit_echarts import st_echarts
 import json
 from os.path import dirname
-import shared
+
 import os
+import threading
+from streamlit.runtime.scriptrunner import add_script_run_ctx
 
+from PyResourceOptimizer import shared
+from PyResourceOptimizer import display
+from PyResourceOptimizer import optimum
 
+logger=shared.logger
 
 def read_json(json_file_path):
     """
@@ -21,16 +24,15 @@ def read_json(json_file_path):
 
 def set_frame():
    st.set_page_config(layout="wide", page_title="Ex-stream-ly Cool App",page_icon="fire")
-   # container1 = st.container()
-   # return container1
+
    
-def get_inputs(credits):
-   logger = shared.logger
+def get_inputs():
+   # logger = shared.logger
    
    Cloud=st.radio("Cloud Provider", ["AWS", "Azure", "GCP"], horizontal=True, index=1, help="Find out from Ops which Cloud your Tenant/Hadoop Cluster is hosted on")
 
    nodes=float(st.slider("Enter the number of Nodes", 1, 200, 3))
-   path = os.path.join(dirname(dirname(__file__)), "data", f"VM_{Cloud}.csv")
+   path = os.path.join(dirname(dirname(dirname(__file__))), "data", f"VM_{Cloud}.csv")
    VM_List = pd.read_csv(path)
    VM_List["DisplayName"]=VM_List["name"].astype(str) + " - " + VM_List["Memory"].astype(str) + "G - " + VM_List["Cores"].astype(str) + "Cores"
    def format_func1(key):
@@ -65,20 +67,63 @@ def get_inputs(credits):
    with col2: 
       RunInfra = st.button("Calculate Ideal Infra!" , help="Help Text to be Added") 
 
-   shared.debug_mode = st.checkbox("Debug Mode")
+   # shared.debug_mode = st.checkbox("Debug Mode")
        
-
-
-      
-
-   keys_list = ["nodes", "VMem", "VCores", "slices", "Input_Rows", "Input_Cols", "DataLoadMultiplier", "cluster_perc", "override_mem", "override_mem_flag", "VPrice", "presliced_flag", "VName", "Run", "RunInfra"]
-   values_list = [nodes, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, VPrice, presliced_flag, VName, Run, RunInfra]
+   keys_list = ["nodes", "VMem", "VCores", "slices", "Input_Rows", "Input_Cols", "DataLoadMultiplier", "cluster_perc", "override_mem", "override_mem_flag", "VPrice", "presliced_flag", "VName", "Run", "RunInfra", "Cloud"]
+   values_list = [nodes, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, VPrice, presliced_flag, VName, Run, RunInfra, Cloud]
    
    shared.inputs = dict(zip(keys_list, values_list))
 
    logger.info(f"Getting Inputs: {shared.inputs}")
 
-   return nodes, VMem, VCores, slices, Input_Rows, Input_Cols, DataLoadMultiplier, cluster_perc, override_mem, override_mem_flag, VM_List, VPrice, presliced_flag, VName, Run, RunInfra, Cloud
+   return
+
+
+def ideal_infra():
+   if shared.inputs["RunInfra"]:
+                       
+      def ideal_infra_VM():
+         CalcMode = 2
+         df1 = optimum.optimize(CalcMode)
+         df = df1.loc[df1.groupby(["node_count"])["MaxSerialSlices"].idxmin()]
+         chart_data1 = df.loc[df.groupby(["MaxSerialSlices"])["node_count"].idxmin()]
+         # =gen_max_slices_curve_data(df1, VCores, VMem)
+         display.display_runtime_vs_node_line_chart(chart_data1)
+
+      def ideal_infra_All():
+         CalcMode = 3
+         df1 = optimum.optimize(CalcMode)
+         chart_data2 = optimum.get_runtime_vs_cost_line_chart_data(df1)
+         display.display_runtime_vs_cost_line_chart(chart_data2)
+                     
+      t1 = threading.Thread(target=ideal_infra_VM, name='t1')
+      t2 = threading.Thread(target=ideal_infra_All, name='t2') 
+      add_script_run_ctx(t1)
+      add_script_run_ctx(t2)
+      # starting threads
+      t1.start()
+      t2.start()
+
+      # wait until all threads finish
+      t1.join()
+      t2.join()
+
+def current_infra():
+   # print(shared.inputs)
+   if (shared.inputs["Run"] | shared.inputs["RunInfra"]): 
+         
+      try:
+         CalcMode = 1
+         df1 = optimum.optimize(CalcMode)\
+                  .sort_values(["MaxSerialSlices", "Exec", "TotalMemUsed" ], \
+                        ascending=[True, True, True])\
+                              .reset_index(drop=True)
+         display.display_results_current_infra(df1)
+
+      except Exception as e: 
+         st.error("The Infra selected is insufficient for the given Data size. Please change the settings and try again!")
+         st.write(e)
+
 
 
 
