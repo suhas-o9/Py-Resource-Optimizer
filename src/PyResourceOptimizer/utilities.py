@@ -114,11 +114,14 @@ def current_infra():
          
       try:
          CalcMode = 1
-         df1 = optimum.optimize(CalcMode)\
-                  .sort_values(["MaxSerialSlices", "Exec", "TotalMemUsed" ], \
-                        ascending=[True, True, True])\
+         df1 = optimum.optimize(CalcMode)
+         # st.info(df1.dtypes)
+         df2=df1.sort_values(["MaxSerialSlices", "TotalCoresUsed", "Exec"], \
+                        ascending=[True, True, False])\
                               .reset_index(drop=True)
-         display.display_results_current_infra(df1)
+         # st.write(df2)                     
+         # df3 = df2.loc[df2.groupby(["MaxSerialSlices", "Exec"])["Cores_y"].idxmin()].reset_index(drop=True)                  
+         display.display_results_current_infra(df2)
 
       except Exception as e: 
          st.error("The Infra selected is insufficient for the given Data size. Please change the settings and try again!")

@@ -43,8 +43,8 @@ def optimize(CalcMode):
 
     #Limit possibilities -??????
     df=df[df.TotalCoresUsed <= 3 * slices]
-
-    df["available_memory_per_node"] = df.Memory * cluster_perc
+    #20% is reserved for other hadoop services
+    df["available_memory_per_node"] = np.max((df.Memory*0.8) * cluster_perc, 0)
     df["available_memory"] = df.node_count * df.available_memory_per_node
     df["available_cores_per_node"] = np.floor(df.Cores_x * cluster_perc).astype("int64")
     df["available_cores"] = (df.node_count * df.available_cores_per_node)
