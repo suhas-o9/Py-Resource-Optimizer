@@ -1,4 +1,4 @@
 
 *.parquet
 logs/*
-src/__pycache__/*
+src/PyResource/__pycache__/*

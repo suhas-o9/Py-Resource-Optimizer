@@ -81,16 +81,20 @@ def get_inputs():
 
 def ideal_infra():
    if shared.inputs["RunInfra"]:
-                       
+      cont1 = st.container()
+      cont2 = st.container()                
       def ideal_infra_VM():
+                     
          CalcMode = 2
          df1 = optimum.optimize(CalcMode)
          df = df1.loc[df1.groupby(["node_count"])["MaxSerialSlices"].idxmin()]
          chart_data1 = df.loc[df.groupby(["MaxSerialSlices"])["node_count"].idxmin()]
          # =gen_max_slices_curve_data(df1, VCores, VMem)
          display.display_runtime_vs_node_line_chart(chart_data1)
-
+   
+         
       def ideal_infra_All():
+               
          CalcMode = 3
          df1 = optimum.optimize(CalcMode)
          chart_data2 = optimum.get_runtime_vs_cost_line_chart_data(df1)
@@ -101,12 +105,15 @@ def ideal_infra():
       add_script_run_ctx(t1)
       add_script_run_ctx(t2)
       # starting threads
+      
       t1.start()
       t2.start()
 
       # wait until all threads finish
-      t1.join()
-      t2.join()
+      with st.spinner("Optimizing for Your VM"): 
+         t1.join()
+      with st.spinner("Optimizing for All VMs"):
+         t2.join()
 
 def current_infra():
    # print(shared.inputs)

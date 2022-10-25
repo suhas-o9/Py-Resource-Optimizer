@@ -41,13 +41,17 @@ def display_results_current_infra(df):
          st.metric("Most Slices in Series", df.MaxSerialSlices.iloc[i], delta=Best, help='''Lower this number, Higher the Parallelism and Lower the Runtime.  
          Ideal number is 1.''')
       with colB:
-         st.metric("Usage of Total Available Memory", str(round(df["TotalMemUsed"].iloc[i], 1))+" GB",delta=Best, help=f"Help text to be added")
+         st.metric("Usage of Total Available Memory", str(round(df["TotalMemUsed"].iloc[i], 1))+" GB",delta=Best, help=f'''This number represents how much memory the plugin will use up  
+         out of the Total Available Memory of {round(df.available_memory.iloc[i], 1)} GB''')
       with colC:
-         st.metric("Usage % of Total Available Memory", str(round(df["TotalMemUsed%"].iloc[i], 1)) + " %", delta=Best,)
+         st.metric("Usage % of Total Available Memory", str(round(df["TotalMemUsed%"].iloc[i], 1)) + " %", delta=Best, help='''The Lower - The Better.  
+         It is fine if this number hits 100% since there are margins taken into account.''')
       with colD:
-         st.metric("Usage of Total Available Cores", df["TotalCoresUsed"].iloc[i], help=f"{df.Exec.iloc[i]} NumExecutors x {df.Cores_y.iloc[i]} ExecutorCores", delta=Best,)
+         st.metric("Usage of Total Available Cores", df["TotalCoresUsed"].iloc[i], help=f'''This number represents how many cores the plugin will use up  
+         out of the Total Available Cores = {df.available_cores.iloc[i]}''', delta=Best)
       with colE:
-         st.metric("Usage % of Total Available Cores", str(round(df["TotalCoresUsed%"].iloc[i], 1)) + " %", delta=Best)
+         st.metric("Usage % of Total Available Cores", str(round(df["TotalCoresUsed%"].iloc[i], 1)) + " %", delta=Best, help='''The Lower - The Better.  
+         It is fine if this number hits 100% since there are margins taken into account.''')
           
    st.success('''VERY VERY BEST🚀🚀🚀🚀''')
    i=0
@@ -89,7 +93,11 @@ def display_runtime_vs_node_line_chart(chart_data):
    options = utilities.read_json(path)
    options["series"][0]["data"] =   chart_data[["node_count","MaxSerialSlices"]].values.tolist()
    with st.expander(options["title"]["expander_text"].format(VName=shared.inputs["VName"])):
+      
+      st.metric(label="How Do I Read this Chart?", value="Runtime vs Number of Nodes", help="Viverra justo nec ultrices dui sapien eget. Ultricies mi quis hendrerit dolor magna eget. Fermentum odio eu feugiat pretium nibh. Bibendum arcu vitae elementum curabitur vitae. Vulputate sapien nec sagittis aliquam malesuada bibendum. Lectus quam id leo in vitae turpis. Proin sed libero enim sed faucibus turpis in. Vitae ultricies leo integer malesuada nunc vel risus. Eget arcu dictum varius duis at consectetur lorem donec massa. Facilisis sed odio morbi quis commodo odio aenean. Fringilla ut morbi tincidunt augue interdum velit euismod in pellentesque. Quis eleifend quam adipiscing vitae proin. Risus pretium quam vulputate dignissim suspendisse in est ante in. Dignissim diam quis enim lobortis scelerisque fermentum dui. Consectetur lorem donec massa sapien faucibus et molestie. Eget arcu dictum varius duis at consectetur lorem donec massa. Sapien pellentesque habitant morbi tristique senectus et. www.google.com ") 
       st_echarts(options=options, height="610px") 
+      
+           
 
 
 def display_runtime_vs_cost_line_chart(chart_data):
@@ -99,4 +107,5 @@ def display_runtime_vs_cost_line_chart(chart_data):
    options["series"][0]["data"] =   full_df_optimum[["total_cost","MaxSerialSlices"]].values.tolist()
    options["series"][1]["data"] =   full_df_optimum[["total_cost","tooltip"]].values.tolist()
    with st.expander("Show Me All Machines, Life's Too Short for Commitments 🏔️"):
+      st.metric(label="How Do I Read this Chart?", value="Runtime vs Cost", help="Viverra justo nec ultrices dui sapien eget. Ultricies mi quis hendrerit dolor magna eget. Fermentum odio eu feugiat pretium nibh. Bibendum arcu vitae elementum curabitur vitae. Vulputate sapien nec sagittis aliquam malesuada bibendum. Lectus quam id leo in vitae turpis. Proin sed libero enim sed faucibus turpis in. Vitae ultricies leo integer malesuada nunc vel risus. Eget arcu dictum varius duis at consectetur lorem donec massa. Facilisis sed odio morbi quis commodo odio aenean. Fringilla ut morbi tincidunt augue interdum velit euismod in pellentesque. Quis eleifend quam adipiscing vitae proin. Risus pretium quam vulputate dignissim suspendisse in est ante in. Dignissim diam quis enim lobortis scelerisque fermentum dui. Consectetur lorem donec massa sapien faucibus et molestie. Eget arcu dictum varius duis at consectetur lorem donec massa. Sapien pellentesque habitant morbi tristique senectus et. www.google.com ") 
       st_echarts(options=options, height="610px") 
