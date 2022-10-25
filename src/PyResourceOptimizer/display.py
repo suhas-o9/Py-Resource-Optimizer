@@ -6,7 +6,7 @@ from PyResourceOptimizer import shared
 from PyResourceOptimizer import utilities
 
 def display_results_current_infra(df):
-   
+   # st.write(df)
    def format_current_infra_results(df, i):
       ExecutorCores  = int(df["Cores_y"])
       NumExecutors   = int(df["Exec"])
