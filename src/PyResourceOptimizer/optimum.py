@@ -59,7 +59,9 @@ def optimize(CalcMode):
     df["MaxSerialSlices"]=np.ceil(slices/df.TotalCoresUsed).astype("int64")
     df["WorkerMemory"] = round(df.Cores_y * MemRequired, 0)
     df["MemoryOverhead"] = df.WorkerMemory + 1
-    df["ExecutorMemory"] = 2 if presliced_flag else round(df.Cores_y * NormalizedDataLoad, 0) 
+    df["WorkerMemory"] = df.WorkerMemory.replace(0,1)
+    df["ExecutorMemory"] = 2 if presliced_flag else np.round(df.Cores_y * NormalizedDataLoad, 0)
+    df["ExecutorMemory"] = df.ExecutorMemory.replace(0,1)
     df["TotalCoresUsed%"] = (df["TotalCoresUsed"] / df.available_cores) * 100
     df["TotalMemUsed"] = (df["MemoryOverhead"] + df["ExecutorMemory"]) * df.Exec
 
