@@ -2,3 +2,7 @@
 *.parquet
 logs/*
 src/PyResource/__pycache__/*
+*.pyc
+src/PyResourceOptimizer/__pycache__/display.cpython-39.pyc
+src/PyResourceOptimizer/__pycache__/optimum.cpython-39.pyc
+src/PyResourceOptimizer/__pycache__/utilities.cpython-39.pyc
