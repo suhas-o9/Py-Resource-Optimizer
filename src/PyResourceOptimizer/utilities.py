@@ -127,8 +127,8 @@ def current_infra():
          CalcMode = 1
          df1 = optimum.optimize(CalcMode)
          # st.info(df1.dtypes)
-         df2=df1.sort_values(["MaxSerialSlices", "TotalCoresUsed", "Exec"], \
-                        ascending=[True, True, False])\
+         df2=df1.sort_values(["MaxSerialSlices", "TotalCoresUsed", "BalancedOptimum"], \
+                        ascending=[True, True, True])\
                               .reset_index(drop=True)
          # st.write(df2)                     
          # df3 = df2.loc[df2.groupby(["MaxSerialSlices", "Exec"])["Cores_y"].idxmin()].reset_index(drop=True)                  

@@ -68,8 +68,8 @@ def display_results_current_infra(df):
          st.markdown('''Add to *SparkProfileConfig*  
          in *TenantSystemSettings* and *DefaultSystemSettings*:''')
          st.code(profile)
-   rows=5
-   st.warning("Not So Best🚀🚀")
+   rows=3
+   st.warning("Almost Best🚀🚀")
    try:
       for i in range(1, rows+1):
          display_formatted_expander(i)
