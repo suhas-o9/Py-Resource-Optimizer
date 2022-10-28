@@ -71,7 +71,7 @@ def optimize(CalcMode):
     df = df[mask3][mask4]
 
     df["TotalMemUsed%"] = (df["TotalMemUsed"] / df.available_memory) * 100
-    
+    df["BalancedOptimum"] = df.Exec + df.Cores_y
     end = dt.now()
     runtime = (end-start).total_seconds()
     print(f"{runtime} seconds")
