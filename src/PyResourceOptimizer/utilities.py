@@ -128,11 +128,12 @@ def current_infra():
          CalcMode = 1
          df1 = optimum.optimize(CalcMode)
          # st.info(df1.dtypes)
-         df2=df1.sort_values(["MaxSerialSlices", "TotalCoresUsed", "BalancedOptimum"], \
-                        ascending=[True, True, True])\
+         df2 = df1.loc[df1.groupby(["MaxSerialSlices", "Exec"])["Cores_y"].idxmin()].reset_index(drop=True) 
+         df2 = df2.loc[df2.groupby(["MaxSerialSlices", "Cores_y"])["Exec"].idxmin()].reset_index(drop=True)  
+         df2=df2.sort_values(["MaxSerialSlices", "BalancedOptimum", "TotalCoresUsed", "Exec"], \
+                        ascending=[True, True, True, False])\
                               .reset_index(drop=True)
          # st.write(df2)                     
-         # df3 = df2.loc[df2.groupby(["MaxSerialSlices", "Exec"])["Cores_y"].idxmin()].reset_index(drop=True)                  
          display.display_results_current_infra(df2)
 
       except Exception as e: 
