@@ -29,9 +29,9 @@ def set_frame():
 def get_inputs():
    # logger = shared.logger
    
-   Cloud=st.radio("Cloud Provider", ["AWS", "Azure", "GCP"], horizontal=True, index=1, help="Find out from Ops which Cloud your Tenant/Hadoop Cluster is hosted on")
-
-   nodes=float(st.slider("Enter the number of Nodes", 1, 200, 3))
+   # Cloud=st.radio("Cloud Provider", ["AWS", "Azure", "GCP"], horizontal=True, index=1, help="Find out from Ops which Cloud your Tenant/Hadoop Cluster is hosted on")
+   Cloud = "Azure"
+   nodes=float(st.slider("Enter the number of Nodes", 1, 100, 3))
    path = os.path.join(dirname(dirname(dirname(__file__))), "data", f"VM_{Cloud}.csv")
    VM_List = pd.read_csv(path)
    VM_List["DisplayName"]=VM_List["name"].astype(str) + " - " + VM_List["Memory"].astype(str) + "G - " + VM_List["Cores"].astype(str) + "Cores"
@@ -48,11 +48,14 @@ def get_inputs():
    slices=st.number_input("Enter the number of Slices", 1, 1000000)
    Input_Rows=st.number_input("Biggest input size(rows in million)", 0,3000)
    Input_Cols=float(st.slider("Biggest input size(columns)", 1, 50, 20))
-   presliced_flag=st.checkbox("Data Pre-Sliced?", help="Big Data tables are already partitioned, for example on HDFS")
-   override_mem_flag=st.checkbox("Override Memory Requirements?")
+   # presliced_flag=st.checkbox("Data Pre-Sliced?", help="Big Data tables are already partitioned, for example on HDFS")
+   # override_mem_flag=st.checkbox("Override Memory Requirements?")
+   presliced_flag = False
+   override_mem_flag = False
    override_mem=np.nan
-   if override_mem_flag:
-      override_mem = st.number_input("Memory Requirements Override (GB)", 0,3000)
+   # if override_mem_flag:
+   #    override_mem = st.number_input("Memory Requirements Override (GB)", 0,3000)
+   
    DataLoadMultiplierdict={
       1:{"name": "Data/Other", "multiplier":2}, 
       2:{"name": "ML", "multiplier":3}}
@@ -65,7 +68,8 @@ def get_inputs():
    with col1: 
       Run = st.button("Calculate!", help="Help Text to be Added")
    with col2: 
-      RunInfra = st.button("Calculate Ideal Infra!" , help="Help Text to be Added") 
+      # RunInfra = st.button("Calculate Ideal Infra!" , help="Help Text to be Added") 
+      RunInfra = False
 
    # shared.debug_mode = st.checkbox("Debug Mode")
        
