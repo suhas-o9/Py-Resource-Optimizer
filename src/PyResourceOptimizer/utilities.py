@@ -46,7 +46,7 @@ def get_inputs():
    VName = VM_List[VM_List["key"]==VM_key]["name"].iloc[0]
    cluster_perc=float(st.slider("Enter the percentage of cluster available", 0, 80, 80))/100
    slices=st.number_input("Enter the number of Slices", 1, 1000000)
-   Input_Rows=st.number_input("Biggest input size(rows in million)", 0,3000)
+   Input_Rows=st.number_input("Biggest input size(rows in million)", 0.1,10000.0, step=0.05)
    Input_Cols=float(st.slider("Biggest input size(columns)", 1, 50, 20))
    # presliced_flag=st.checkbox("Data Pre-Sliced?", help="Big Data tables are already partitioned, for example on HDFS")
    # override_mem_flag=st.checkbox("Override Memory Requirements?")
