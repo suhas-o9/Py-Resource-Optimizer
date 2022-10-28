@@ -9,7 +9,7 @@ from os.path import dirname
 # from PyResourceOptimizer import *
 # from .shared import inputs
 import os
-from PyResourceOptimizer import shared
+from src.PyResourceOptimizer import shared
 
 
 logger = shared.logger

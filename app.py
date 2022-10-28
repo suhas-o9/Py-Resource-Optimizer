@@ -1,20 +1,20 @@
 import streamlit as st
 from os.path import dirname
-from PyResourceOptimizer.utilities import (
+from src.PyResourceOptimizer.utilities import (
     read_json,
     set_frame,
     get_inputs,
     ideal_infra,
     current_infra,
 )
-from PyResourceOptimizer import shared
+from src.PyResourceOptimizer import shared
 import os
 
 
 def main():
 
     set_frame()
-    path = os.path.join(dirname(dirname(__file__)), "config", "text.json")
+    path = os.path.join(dirname(__file__), "config", "text.json")
     text = read_json(path)
 
     st.title(text["title"]["text"])

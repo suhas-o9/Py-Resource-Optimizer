@@ -2,8 +2,8 @@ import streamlit as st
 from streamlit_echarts import st_echarts
 import os
 from os.path import dirname
-from PyResourceOptimizer import shared
-from PyResourceOptimizer import utilities
+from src.PyResourceOptimizer import shared
+from src.PyResourceOptimizer import utilities
 
 
 def display_results_current_infra(df):

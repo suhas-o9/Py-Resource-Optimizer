@@ -8,9 +8,9 @@ import os
 import threading
 from streamlit.runtime.scriptrunner import add_script_run_ctx
 
-from PyResourceOptimizer import shared
-from PyResourceOptimizer import display
-from PyResourceOptimizer import optimum
+from src.PyResourceOptimizer import shared
+from src.PyResourceOptimizer import display
+from src.PyResourceOptimizer import optimum
 
 logger = shared.logger
 
