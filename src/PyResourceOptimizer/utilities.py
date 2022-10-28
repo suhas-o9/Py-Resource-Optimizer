@@ -31,6 +31,7 @@ def set_frame():
 
 
 def get_inputs():
+
     # logger = shared.logger
 
     Cloud = st.radio(
