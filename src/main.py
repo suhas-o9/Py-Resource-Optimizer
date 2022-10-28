@@ -25,8 +25,7 @@ def main():
     with tab1:
         current_infra()
     with tab2:
-        # ideal_infra()
-        st.info("Coming Soon...")
+        ideal_infra()
 
 
 main()
