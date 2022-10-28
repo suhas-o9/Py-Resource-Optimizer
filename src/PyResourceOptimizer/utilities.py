@@ -64,9 +64,10 @@ def get_inputs():
    Purpose_key=st.radio("Purpose of Plugin", list(DataLoadMultiplierdict.keys()), horizontal=True, index=1, format_func=format_func2, help="The type of plugin impacts how much compute is needed")
    DataLoadMultiplier=DataLoadMultiplierdict[Purpose_key]["multiplier"]
    
-   col1, col2 = st.columns(2)
+   col1, col2 = st.columns([20,1])
    with col1: 
       Run = st.button("Calculate!", help="Help Text to be Added")
+      st.write("Feedback: suhas.umesh@o9solutions.com")
    with col2: 
       # RunInfra = st.button("Calculate Ideal Infra!" , help="Help Text to be Added") 
       RunInfra = False
