@@ -46,7 +46,7 @@ def get_inputs():
    VName = VM_List[VM_List["key"]==VM_key]["name"].iloc[0]
    cluster_perc=float(st.slider("Enter the percentage of cluster available", 0, 80, 80))/100
    slices=st.number_input("Enter the number of Slices", 1, 1000000)
-   Input_Rows=st.number_input("Biggest input size(rows in million)", 0,3000)
+   Input_Rows=st.number_input("Biggest input size(rows in million)", 0.1,10000.0, step=0.05)
    Input_Cols=float(st.slider("Biggest input size(columns)", 1, 50, 20))
    # presliced_flag=st.checkbox("Data Pre-Sliced?", help="Big Data tables are already partitioned, for example on HDFS")
    # override_mem_flag=st.checkbox("Override Memory Requirements?")
@@ -64,9 +64,10 @@ def get_inputs():
    Purpose_key=st.radio("Purpose of Plugin", list(DataLoadMultiplierdict.keys()), horizontal=True, index=1, format_func=format_func2, help="The type of plugin impacts how much compute is needed")
    DataLoadMultiplier=DataLoadMultiplierdict[Purpose_key]["multiplier"]
    
-   col1, col2 = st.columns(2)
+   col1, col2 = st.columns([20,1])
    with col1: 
       Run = st.button("Calculate!", help="Help Text to be Added")
+      st.write("Feedback: suhas.umesh@o9solutions.com")
    with col2: 
       # RunInfra = st.button("Calculate Ideal Infra!" , help="Help Text to be Added") 
       RunInfra = False
@@ -127,11 +128,12 @@ def current_infra():
          CalcMode = 1
          df1 = optimum.optimize(CalcMode)
          # st.info(df1.dtypes)
-         df2=df1.sort_values(["MaxSerialSlices", "TotalCoresUsed", "BalancedOptimum"], \
-                        ascending=[True, True, True])\
+         df2 = df1.loc[df1.groupby(["MaxSerialSlices", "Exec"])["Cores_y"].idxmin()].reset_index(drop=True) 
+         df2 = df2.loc[df2.groupby(["MaxSerialSlices", "Cores_y"])["Exec"].idxmin()].reset_index(drop=True)  
+         df2=df2.sort_values(["MaxSerialSlices", "BalancedOptimum", "TotalCoresUsed", "Exec"], \
+                        ascending=[True, True, True, False])\
                               .reset_index(drop=True)
          # st.write(df2)                     
-         # df3 = df2.loc[df2.groupby(["MaxSerialSlices", "Exec"])["Cores_y"].idxmin()].reset_index(drop=True)                  
          display.display_results_current_infra(df2)
 
       except Exception as e: 
