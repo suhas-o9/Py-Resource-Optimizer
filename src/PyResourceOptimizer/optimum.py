@@ -64,14 +64,14 @@ def optimize(CalcMode):
     df["ExecutorMemory"] = df.ExecutorMemory.replace(0,1)
     df["TotalCoresUsed%"] = (df["TotalCoresUsed"] / df.available_cores) * 100
     df["TotalMemUsed"] = (df["MemoryOverhead"] + df["ExecutorMemory"]) * df.Exec
-    
+
     #CONSTRAINT 3 and 4
     mask3 = df.TotalMemUsed < df.available_memory
     mask4 = df.MaxExecPerNode * (df.ExecutorMemory + df.MemoryOverhead) < df.available_memory_per_node
     df = df[mask3][mask4]
 
     df["TotalMemUsed%"] = (df["TotalMemUsed"] / df.available_memory) * 100
-    
+
     end = dt.now()
     runtime = (end-start).total_seconds()
     print(f"{runtime} seconds")
