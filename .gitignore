@@ -1,6 +1,6 @@
 
 *.parquet
-logs/*
+logs/*.csv
 src/PyResource/__pycache__/*
 *.pyc
 src/PyResourceOptimizer/__pycache__/display.cpython-39.pyc
