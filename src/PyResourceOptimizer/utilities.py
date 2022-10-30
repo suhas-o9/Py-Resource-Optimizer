@@ -35,7 +35,7 @@ def get_inputs():
 
     # Cloud=st.radio("Cloud Provider", ["AWS", "Azure", "GCP"], horizontal=True, index=1, help="Find out from Ops which Cloud your Tenant/Hadoop Cluster is hosted on")
     Cloud = "Azure"
-    nodes = float(st.slider("Enter the number of Nodes", 1, 100, 3))
+    nodes = float(st.number_input("Enter the number of Nodes", min_value=1, max_value=100, step=1))
     path = os.path.join(dirname(dirname(dirname(__file__))), "data", f"VM_{Cloud}.csv")
     VM_List = pd.read_csv(path)
     VM_List["DisplayName"] = (
