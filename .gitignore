@@ -1,5 +1,5 @@
 
-*.parquet
+
 logs/*.csv
 src/PyResource/__pycache__/*
 *.pyc
