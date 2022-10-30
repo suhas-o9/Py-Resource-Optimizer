@@ -127,7 +127,8 @@ def display_results_current_infra(df):
                     )
                     st.code(profile)
     except Exception as e:
-        st.error(f"Error due to {e}")
+        st.warn("Not Enough Options to Display")
+        # st.error(f"Error due to {e}")
 
 
 def display_runtime_vs_node_line_chart(chart_data):

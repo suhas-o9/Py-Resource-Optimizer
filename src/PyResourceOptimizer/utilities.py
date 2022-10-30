@@ -209,5 +209,5 @@ def current_infra():
             st.error(
                 "The Infra selected is insufficient for the given Data size. Please change the settings and try again!"
             )
-            st.write(e)
+            # st.write(e)
 
