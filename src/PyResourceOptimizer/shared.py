@@ -5,7 +5,7 @@ import csv
 import io
 
 # from utilities import set_frame
-
+MaxMemory=0
 
 class CsvFormatter(logging.Formatter):
     def __init__(self):
