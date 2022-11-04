@@ -9,10 +9,11 @@ from src.PyResourceOptimizer.utilities import (
 )
 from src.PyResourceOptimizer import shared
 import os
-
+import gc
+logger=shared.logger
 
 def main():
-
+    shared.MaxMemory=0
     set_frame()
     path = os.path.join(dirname(__file__), "config", "text.json")
     text = read_json(path)
@@ -28,5 +29,6 @@ def main():
         # ideal_infra()
         st.info("Coming Soon...")
 
+    logger.info(f"Max Memory is {shared.MaxMemory} GB")
 
 main()

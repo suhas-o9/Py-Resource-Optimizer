@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import json
 from os.path import dirname
-
+import psutil
 import os
 import threading
 from streamlit.runtime.scriptrunner import add_script_run_ctx
@@ -35,7 +35,9 @@ def get_inputs():
 
     # Cloud=st.radio("Cloud Provider", ["AWS", "Azure", "GCP"], horizontal=True, index=1, help="Find out from Ops which Cloud your Tenant/Hadoop Cluster is hosted on")
     Cloud = "Azure"
-    nodes = float(st.number_input("Enter the number of Nodes", min_value=1, max_value=100, step=1))
+    nodes = float(
+        st.number_input("Enter the number of Nodes", min_value=1, max_value=100, step=1)
+    )
     path = os.path.join(dirname(dirname(dirname(__file__))), "data", f"VM_{Cloud}.csv")
     VM_List = pd.read_csv(path)
     VM_List["DisplayName"] = (
@@ -143,7 +145,7 @@ def get_inputs():
     shared.inputs = dict(zip(keys_list, values_list))
 
     logger.info(f"Getting Inputs: {shared.inputs}")
-
+    update_max_memory()
     return
 
 
@@ -198,16 +200,28 @@ def current_infra():
             df2 = df2.loc[
                 df2.groupby(["MaxSerialSlices", "Cores_y"])["Exec"].idxmin()
             ].reset_index(drop=True)
+            update_max_memory()
             df2 = df2.sort_values(
                 ["MaxSerialSlices", "BalancedOptimum", "TotalCoresUsed", "Exec"],
                 ascending=[True, True, True, False],
             ).reset_index(drop=True)
             # st.write(df2)
             display.display_results_current_infra(df2)
-
+            
         except Exception as e:
             st.error(
                 "The Infra selected is insufficient for the given Data size. Please change the settings and try again!"
             )
             # st.write(e)
 
+
+# Memory profiling code begins
+def get_current_memory():
+    process = psutil.Process(os.getpid())
+    info = process.memory_info()
+    return info.rss / 1000000000
+
+
+def update_max_memory():
+    current_memory = get_current_memory()
+    shared.MaxMemory = max(shared.MaxMemory, current_memory)

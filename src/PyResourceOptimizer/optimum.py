@@ -10,7 +10,7 @@ from os.path import dirname
 # from .shared import inputs
 import os
 from src.PyResourceOptimizer import shared
-
+from src.PyResourceOptimizer import utilities
 
 logger = shared.logger
 
@@ -56,7 +56,7 @@ def optimize(CalcMode):
         path = os.path.join(
             dirname(dirname(dirname(__file__))), "data", f"factors_{VName}.parquet"
         )
-
+    utilities.update_max_memory()
     df = pd.read_parquet(path)
     df = df.astype(
         {
@@ -79,12 +79,11 @@ def optimize(CalcMode):
     df["available_memory"] = df.node_count * df.available_memory_per_node
     df["available_cores_per_node"] = np.floor(df.Cores_x * cluster_perc).astype("int64")
     df["available_cores"] = df.node_count * df.available_cores_per_node
-
+    utilities.update_max_memory()
     # Constraints 1 and 2
     mask1 = df["TotalCoresUsed"] <= df["available_cores"]
     mask2 = df["Cores_y"] <= df["available_cores_per_node"]
     df = df[mask1][mask2]
-
     df["TotalMemUsed"] = (
         df.TotalCoresUsed * (MemRequired + NormalizedDataLoad) + df.Exec
     )
@@ -99,7 +98,7 @@ def optimize(CalcMode):
     df["ExecutorMemory"] = df.ExecutorMemory.replace(0, 1)
     df["TotalCoresUsed%"] = (df["TotalCoresUsed"] / df.available_cores) * 100
     df["TotalMemUsed"] = (df["MemoryOverhead"] + df["ExecutorMemory"]) * df.Exec
-
+    utilities.update_max_memory()
     # CONSTRAINT 3 and 4
     mask3 = df.TotalMemUsed < df.available_memory
     mask4 = (
@@ -110,6 +109,7 @@ def optimize(CalcMode):
 
     df["TotalMemUsed%"] = (df["TotalMemUsed"] / df.available_memory) * 100
     df["BalancedOptimum"] = df.Exec + df.Cores_y
+    utilities.update_max_memory()
     end = dt.now()
     runtime = (end - start).total_seconds()
     print(f"{runtime} seconds")
