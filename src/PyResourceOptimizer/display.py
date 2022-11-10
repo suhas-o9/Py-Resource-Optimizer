@@ -21,7 +21,8 @@ def display_results_current_infra(df):
             exec_mem = f"""(ExecutorMemory, "{ExecutorMemory}G")"""
             driver_mem = f"""(DriverMemory, "5G")"""
             driver_cores = f"""(DriverCores, 1)"""
-            args = f"""{exec}, {cores}, {exec_mem},\n{driver_mem},  {driver_cores}"""
+            spark_profile = f"""("SparkProfileConfig", "spark_profile_{i}")"""
+            args = f"""{exec}, {cores}, {exec_mem},\n{driver_mem},  {driver_cores}, {spark_profile}"""
             return args
 
         def format_SparkConfig():
@@ -33,7 +34,8 @@ def display_results_current_infra(df):
                 + f""" {worker_mem},
                      {mem_overhead},
                      "spark.python.profile": true,
-                     "spark.python.worker.reuse": false  """
+                     "spark.python.worker.reuse": false,
+                     "spark.executorEnv.MKL_NUM_THREADS": 2, "spark.executorEnv.NUMEXPR_NUM_THREADS": 2, "spark.executorEnv.OMP_NUM_THREADS": 2  """
                 + "}"
             )
             return profile
