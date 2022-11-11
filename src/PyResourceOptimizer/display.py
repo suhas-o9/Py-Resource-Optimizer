@@ -14,6 +14,7 @@ def display_results_current_infra(df):
         WorkerMemory = int(df["WorkerMemory"])
         MemoryOverhead = int(df["MemoryOverhead"])
         ExecutorMemory = int(df["ExecutorMemory"])
+        SliceBucket = int(shared.inputs["slices"])+1
 
         def format_arguments():
             cores = f"""(ExecutorCores, {ExecutorCores})"""
@@ -22,7 +23,8 @@ def display_results_current_infra(df):
             driver_mem = f"""(DriverMemory, "5G")"""
             driver_cores = f"""(DriverCores, 1)"""
             spark_profile = f"""("SparkProfileConfig", "spark_profile_{i}")"""
-            args = f"""{exec}, {cores}, {exec_mem},\n{driver_mem},  {driver_cores}, {spark_profile}"""
+            slice_bucket = f"""([Param.use_slice_bucket_count], True)"""
+            args = f"""{exec}, {cores}, {exec_mem},\n{driver_mem},  {driver_cores}, \n{spark_profile}, {slice_bucket}"""
             return args
 
         def format_SparkConfig():
