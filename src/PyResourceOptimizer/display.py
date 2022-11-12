@@ -5,6 +5,7 @@ from os.path import dirname
 from src.PyResourceOptimizer import shared
 from src.PyResourceOptimizer import utilities
 
+logger=shared.logger
 
 def display_results_current_infra(df):
     # st.write(df)
@@ -86,8 +87,17 @@ def display_results_current_infra(df):
          It is fine if this number hits 100% since there are margins taken into account.""",
             )
 
-    st.success("""VERY VERY BEST🚀🚀🚀🚀""")
+    
     i = 0
+    if df.empty:
+        st.error("Not enough options to display. The Infra selected may be insufficient for the given Data size. Please change the settings and try again!")
+        return
+    st.info(f"Found {len(df)} feasible solution(s). Displaying the best ones...")
+    extra_rows = 3
+    if len(df) < extra_rows+1:
+        
+        extra_rows = len(df)-1
+    st.success("""VERY VERY BEST🚀🚀🚀🚀""")
     display_formatted_expander(i)
 
     with st.expander("Arguments and Profile for Optimal Solution", expanded=True):
@@ -105,10 +115,11 @@ def display_results_current_infra(df):
          in *TenantSystemSettings* and *DefaultSystemSettings*:"""
             )
             st.code(profile)
-    rows = 3
+    if len(df)==1:
+        return
     st.warning("Almost Best🚀🚀")
     try:
-        for i in range(1, rows + 1):
+        for i in range(1, extra_rows+1):
             display_formatted_expander(i)
 
             with st.expander(f"Sub Optimal Option {i}🚀🚀", expanded=False):
@@ -127,8 +138,8 @@ def display_results_current_infra(df):
                     )
                     st.code(profile)
     except Exception as e:
-        st.warn("Not Enough Options to Display")
-        # st.error(f"Error due to {e}")
+        st.error("An error occurred. Please reach out to support / suhas.umesh@solutions.com with the relevant details")
+        logger.error(f"Error due to {e}")
 
 
 def display_runtime_vs_node_line_chart(chart_data):

@@ -28,6 +28,7 @@ def optimize(CalcMode):
         VMem,
         VCores,
         slices,
+        Input_Rows_Total,
         Input_Rows,
         Input_Cols,
         DataLoadMultiplier,
@@ -42,6 +43,7 @@ def optimize(CalcMode):
         Cloud,
     ) = shared.inputs.values()
 
+    NormalizedDataLoadTotal = Input_Rows_Total * (Input_Cols / 20)
     NormalizedDataLoad = Input_Rows * (Input_Cols / 20)
     calc_mem = NormalizedDataLoad * DataLoadMultiplier
     MemRequired = override_mem if override_mem_flag else calc_mem
@@ -84,16 +86,16 @@ def optimize(CalcMode):
     mask1 = df["TotalCoresUsed"] <= df["available_cores"]
     mask2 = df["Cores_y"] <= df["available_cores_per_node"]
     df = df[mask1][mask2]
-    df["TotalMemUsed"] = (
-        df.TotalCoresUsed * (MemRequired + NormalizedDataLoad) + df.Exec
-    )
+    # df["TotalMemUsed"] = (
+    #     df.TotalCoresUsed * (MemRequired + NormalizedDataLoad) + df.Exec
+    # )
     df["MaxExecPerNode"] = np.ceil(df.Exec / df.node_count).astype("int64")
     df["MaxSerialSlices"] = np.ceil(slices / df.TotalCoresUsed).astype("int64")
     df["WorkerMemory"] = round(df.Cores_y * MemRequired, 0)
     df["MemoryOverhead"] = df.WorkerMemory + 1
     df["WorkerMemory"] = df.WorkerMemory.replace(0, 1)
     df["ExecutorMemory"] = (
-        2 if presliced_flag else np.round(df.Cores_y * NormalizedDataLoad, 0)
+        2 if presliced_flag else np.ceil(NormalizedDataLoadTotal/df.Exec)
     )
     df["ExecutorMemory"] = df.ExecutorMemory.replace(0, 1)
     df["TotalCoresUsed%"] = (df["TotalCoresUsed"] / df.available_cores) * 100
