@@ -65,18 +65,7 @@ def get_inputs():
         float(st.slider("Enter the percentage of cluster available", 0, 80, 80)) / 100
     )
     slices = st.number_input("Enter the number of Slices", 1, 1000000)
-    Input_Rows = st.number_input(
-        "Biggest input size(rows in million)", 0.1, 10000.0, step=0.05
-    )
-    Input_Cols = float(st.slider("Biggest input size(columns)", 1, 50, 20))
-    # presliced_flag=st.checkbox("Data Pre-Sliced?", help="Big Data tables are already partitioned, for example on HDFS")
-    # override_mem_flag=st.checkbox("Override Memory Requirements?")
-    presliced_flag = False
-    override_mem_flag = False
-    override_mem = np.nan
-    # if override_mem_flag:
-    #    override_mem = st.number_input("Memory Requirements Override (GB)", 0,3000)
-
+    
     DataLoadMultiplierdict = {
         1: {"name": "Data/Other", "multiplier": 2},
         2: {"name": "ML", "multiplier": 3},
@@ -94,10 +83,26 @@ def get_inputs():
         help="The type of plugin impacts how much compute is needed",
     )
     DataLoadMultiplier = DataLoadMultiplierdict[Purpose_key]["multiplier"]
-
+    
+    st.write("For the biggest Input table:")
+    Input_Rows_Total = st.number_input(
+        "Row Count for the whole table (Millions)", 0.1, 10000.0, step=0.05
+    )
+    Input_Rows = st.number_input(
+        "Row Count for the Largest Slice (Millions)", 0.1, 10000.0, step=0.05, help="Pivot the biggest input table grouped by slicing attribute and find the row count in the largest slice"
+    )
+    Input_Cols = float(st.slider("Number of Columns", 1, 50, 20))
+    presliced_flag = False
+    override_mem_flag = False
+    override_mem = np.nan
+    st.info(f"Expected Max Memory Consumption by the Largest Slice = {round(Input_Rows*(Input_Cols/20)*DataLoadMultiplier, 1)}G")
+    # presliced_flag=st.checkbox("Data Pre-Sliced?", help="Big Data tables are already partitioned, for example on HDFS")
+    override_mem_flag=st.checkbox("Override Memory Requirements?", help="If the Expected Memory Consumption is different from Real Memory Consumption")
+    if override_mem_flag:
+       override_mem = st.number_input(label="Memory Requirements Override (GB)", min_value=0.1,max_value=3000.0, step=0.1, help="Set this to about 110% of the Max Memory Consumption of your Largest slice, using Memory Profiling Statements in the code")
     col1, col2 = st.columns([20, 1])
     with col1:
-        Run = st.button("Calculate!", help="Help Text to be Added")
+        Run = st.button("Calculate!", help="Get the Most of the Current Infra")
         st.write("Feedback: suhas.umesh@o9solutions.com")
     with col2:
         # RunInfra = st.button("Calculate Ideal Infra!" , help="Help Text to be Added")
@@ -110,6 +115,7 @@ def get_inputs():
         "VMem",
         "VCores",
         "slices",
+        "Input_Rows_Total",
         "Input_Rows",
         "Input_Cols",
         "DataLoadMultiplier",
@@ -128,6 +134,7 @@ def get_inputs():
         VMem,
         VCores,
         slices,
+        Input_Rows_Total,
         Input_Rows,
         Input_Cols,
         DataLoadMultiplier,
@@ -210,9 +217,9 @@ def current_infra():
             
         except Exception as e:
             st.error(
-                "The Infra selected is insufficient for the given Data size. Please change the settings and try again!"
+                "An Error occurred. Please reach out to support or suhas.umesh@o9solutions.com with the relevant details."
             )
-            # st.write(e)
+            logger.error(e)
 
 
 # Memory profiling code begins
