@@ -73,11 +73,11 @@ def optimize(CalcMode):
 
     if CalcMode == 3:
         path = os.path.join(
-            dirname(dirname(dirname(__file__))), "data", f"factors_{Cloud}.parquet"
+            dirname(dirname(dirname(__file__))), "data", "parquet"
         )
     if CalcMode == 1 or CalcMode == 2:
         path = os.path.join(
-            dirname(dirname(dirname(__file__))), "data", f"factors_{VName}.parquet"
+            dirname(dirname(dirname(__file__))), "data",  "parquet", f"factors_{VName}.parquet"
         )
     utilities.update_max_memory()
     df = pd.read_parquet(path)

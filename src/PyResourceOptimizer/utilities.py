@@ -105,8 +105,9 @@ def get_inputs():
         Run = st.button("Calculate!", help="Get the Most of the Current Infra")
         st.write("Feedback: suhas.umesh@o9solutions.com")
     with col2:
-        # RunInfra = st.button("Calculate Ideal Infra!" , help="Help Text to be Added")
         RunInfra = False
+        RunInfra = st.button("Calculate Ideal Infra!" , help="Get the Most out of your Money")
+        
 
     # shared.debug_mode = st.checkbox("Debug Mode")
 
