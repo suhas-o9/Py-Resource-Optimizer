@@ -186,6 +186,7 @@ def ideal_infra():
             CalcMode = 3
             df1 = optimum.optimize(CalcMode)
             chart_data2 = optimum.get_runtime_vs_cost_line_chart_data(df1)
+            # st.write(chart_data2)
             display.display_runtime_vs_cost_line_chart(chart_data2)
 
         t1 = threading.Thread(target=ideal_infra_VM, name="t1")
