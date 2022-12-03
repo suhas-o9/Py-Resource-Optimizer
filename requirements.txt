@@ -3,3 +3,4 @@ numpy
 streamlit
 streamlit_echarts
 psutil
+pygit2

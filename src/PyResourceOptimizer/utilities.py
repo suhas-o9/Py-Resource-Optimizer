@@ -7,7 +7,7 @@ import psutil
 import os
 import threading
 from streamlit.runtime.scriptrunner import add_script_run_ctx
-
+from pygit2 import Repository
 from src.PyResourceOptimizer import shared
 from src.PyResourceOptimizer import display
 from src.PyResourceOptimizer import optimum
@@ -26,7 +26,17 @@ def read_json(json_file_path):
 
 def set_frame():
     st.set_page_config(
-        layout="wide", page_title="Ex-stream-ly Cool App", page_icon="fire"
+        layout="wide", 
+        page_title="Py Resource Optimizer", 
+        page_icon="money_mouth_face",
+        initial_sidebar_state="expanded",
+        menu_items={
+         'Get Help': None,
+         'Report a bug': "mailto:suhas.umesh@o9solutions.com",
+         'About': f'''Save Money, Save Time.  
+         Version: {Repository('.').head.shorthand}'''
+     }
+
     )
 
 
@@ -100,14 +110,14 @@ def get_inputs():
     override_mem_flag=st.checkbox("Override Memory Requirements?", help="If the Expected Memory Consumption is different from Real Memory Consumption")
     if override_mem_flag:
        override_mem = st.number_input(label="Memory Requirements Override (GB)", min_value=0.1,max_value=3000.0, step=0.1, help="Set this to about 110% of the Max Memory Consumption of your Largest slice, using Memory Profiling Statements in the code")
-    col1, col2 = st.columns([20, 1])
+    col1, col2 = st.columns([1,2])
     with col1:
         Run = st.button("Calculate!", help="Get the Most of the Current Infra")
-        st.write("Feedback: suhas.umesh@o9solutions.com")
+        
     with col2:
         RunInfra = False
         RunInfra = st.button("Calculate Ideal Infra!" , help="Get the Most out of your Money")
-        
+    st.write("Feedback: suhas.umesh@o9solutions.com")    
 
     # shared.debug_mode = st.checkbox("Debug Mode")
 
