@@ -21,6 +21,27 @@ def optimize(CalcMode):
     1: Current VM, Current Node Count
     2: Current VM, Any Node Count
     3. Any VM, Any Node Count
+
+    output schema: 
+    Cores_x                    int64
+    Memory                     int64
+    node_count                 int64
+    Exec                       int64
+    Cores_y                    int64
+    TotalCoresUsed             int64
+    available_memory_per_node  float64
+    available_memory           float64
+    available_cores_per_node   int64
+    available_cores            int64
+    TotalMemUsed               float64
+    MaxExecPerNode             int64
+    MaxSerialSlices            int64
+    WorkerMemory               float64
+    MemoryOverhead             float64
+    ExecutorMemory             float64
+    TotalCoresUsed%            float64
+    TotalMemUsed%              float64
+    BalancedOptimum            int64
     """
 
     (
@@ -52,11 +73,11 @@ def optimize(CalcMode):
 
     if CalcMode == 3:
         path = os.path.join(
-            dirname(dirname(dirname(__file__))), "data", f"factors_{Cloud}.parquet"
+            dirname(dirname(dirname(__file__))), "data", "parquet"
         )
     if CalcMode == 1 or CalcMode == 2:
         path = os.path.join(
-            dirname(dirname(dirname(__file__))), "data", f"factors_{VName}.parquet"
+            dirname(dirname(dirname(__file__))), "data",  "parquet", f"factors_{VName}.parquet"
         )
     utilities.update_max_memory()
     df = pd.read_parquet(path)

@@ -92,23 +92,22 @@ def get_inputs():
         "Row Count for the Largest Slice (Millions)", 0.1, 10000.0, step=0.05, help="Pivot the biggest input table grouped by slicing attribute and find the row count in the largest slice"
     )
     Input_Cols = float(st.slider("Number of Columns", 1, 50, 20))
-    # presliced_flag=st.checkbox("Data Pre-Sliced?", help="Big Data tables are already partitioned, for example on HDFS")
-    # override_mem_flag=st.checkbox("Override Memory Requirements?")
     presliced_flag = False
     override_mem_flag = False
     override_mem = np.nan
-    # if override_mem_flag:
-    #    override_mem = st.number_input("Memory Requirements Override (GB)", 0,3000)
-
-    
-
+    st.info(f"Expected Max Memory Consumption by the Largest Slice = {round(Input_Rows*(Input_Cols/20)*DataLoadMultiplier, 1)}G")
+    # presliced_flag=st.checkbox("Data Pre-Sliced?", help="Big Data tables are already partitioned, for example on HDFS")
+    override_mem_flag=st.checkbox("Override Memory Requirements?", help="If the Expected Memory Consumption is different from Real Memory Consumption")
+    if override_mem_flag:
+       override_mem = st.number_input(label="Memory Requirements Override (GB)", min_value=0.1,max_value=3000.0, step=0.1, help="Set this to about 110% of the Max Memory Consumption of your Largest slice, using Memory Profiling Statements in the code")
     col1, col2 = st.columns([20, 1])
     with col1:
-        Run = st.button("Calculate!", help="Help Text to be Added")
+        Run = st.button("Calculate!", help="Get the Most of the Current Infra")
         st.write("Feedback: suhas.umesh@o9solutions.com")
     with col2:
-        # RunInfra = st.button("Calculate Ideal Infra!" , help="Help Text to be Added")
         RunInfra = False
+        RunInfra = st.button("Calculate Ideal Infra!" , help="Get the Most out of your Money")
+        
 
     # shared.debug_mode = st.checkbox("Debug Mode")
 
@@ -234,3 +233,4 @@ def get_current_memory():
 def update_max_memory():
     current_memory = get_current_memory()
     shared.MaxMemory = max(shared.MaxMemory, current_memory)
+    logger.info(f"Current Max Memory is {shared.MaxMemory} GB")
