@@ -233,3 +233,4 @@ def get_current_memory():
 def update_max_memory():
     current_memory = get_current_memory()
     shared.MaxMemory = max(shared.MaxMemory, current_memory)
+    logger.info(f"Current Max Memory is {shared.MaxMemory} GB")
